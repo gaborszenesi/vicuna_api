@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  app:
+    build: .
+    image: synarg/vicuna_api:latest
+    container_name: vicuna_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - FASTCHAT_CONTROLLER_URL=http://127.0.0.1:21001
