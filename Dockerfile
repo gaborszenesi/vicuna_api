@@ -1,17 +1,38 @@
-FROM nvidia/cuda:11.7.0-devel-ubuntu20.04
+FROM nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
 WORKDIR /usr/src/app
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends wget python3-pip git build-essential make cmake lsb-release screen && \
-    pip3 install --upgrade --no-cache-dir pip && \
-    wget -q -c -nc https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip && \
-    unzip -qq -n ./ngrok-stable-linux-amd64.zip
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+ENV TORCH_CUDA_ARCH_LIST="7.5"
+
+# Update package index, install tzdata, and configure the time zone
+RUN echo $TZ > /etc/timezone && \
+    apt-get update && \
+    apt-get install -y tzdata && \
+    dpkg-reconfigure -f noninteractive tzdata
+
+# Install packages
+RUN apt-get install -y --no-install-recommends wget python3-pip python3-dev git build-essential make cmake lsb-release screen zip unzip curl
+RUN pip install jupyterlab
+
+# Upgrade pip
+RUN pip3 install --upgrade --no-cache-dir pip
+RUN pip3 install shortuuid
+
+# Download ngrok binary
+RUN wget -q -c -nc https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+
+# Unzip ngrok binary
+RUN unzip -qq -n ./ngrok-stable-linux-amd64.zip
 
 COPY --chmod=0777 . ./
 
-RUN pip3 install -e . && \
-    python3 ./repositories/GPTQ-for-LLaMa/setup_cuda.py install && \
-    mkdir ./models/anon8231489123_vicuna-13b-GPTQ-4bit-128g
+RUN pip3 install -e .
+
+RUN cd ./repositories/GPTQ-for-LLaMa && python3 ./setup_cuda.py install
+
+RUN mkdir ./models/anon8231489123_vicuna-13b-GPTQ-4bit-128g
 
 RUN echo "Downloading model files..." && \
     wget -P ./models/anon8231489123_vicuna-13b-GPTQ-4bit-128g --show-progress http://185.51.190.195/vicuna/config.json && \

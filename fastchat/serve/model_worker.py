@@ -10,6 +10,7 @@ import time
 from typing import List, Union
 import threading
 import uuid
+from pathlib import Path
 
 from fastapi import FastAPI, Request, BackgroundTasks
 from fastapi.responses import StreamingResponse
@@ -46,8 +47,9 @@ def load_model(model_path, num_gpus, wbits, groupsize):
             "device_map": "auto",
             "max_memory": {i: "13GiB" for i in range(num_gpus)},
         }
-
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    model_path = model_path.replace('/', '_')
+    path_to_model = Path(f'/usr/src/app/models/{model_path}')
+    tokenizer = AutoTokenizer.from_pretrained(str(path_to_model), local_files_only=True)
     
     if wbits > 0:
         from fastchat.serve.load_gptq_model import load_quantized

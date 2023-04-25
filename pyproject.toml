@@ -27,4 +27,4 @@ dependencies = [
 exclude = ["assets*", "benchmark*", "docs", "dist*", "playground*", "scripts*", "tests*", "repositories*"]
 
 [tool.wheel]
-exclude = ["assets*", "benchmark*", "docs", "dist*", "playground*", "scripts*", "tests*", "repositories*]
+exclude = ["assets*", "benchmark*", "docs", "dist*", "playground*", "scripts*", "tests*", "repositories*"]

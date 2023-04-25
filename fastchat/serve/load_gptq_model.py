@@ -3,7 +3,7 @@ from pathlib import Path
 import torch
 import transformers
 from transformers import AutoConfig, AutoModelForCausalLM
-
+sys.path.append("/usr/src/app/repositories/GPTQ-for-LLaMa")
 sys.path.insert(0, str(Path("../../repositories/GPTQ-for-LLaMa")))
 from modelutils import find_layers
 from quant import make_quant
@@ -45,7 +45,7 @@ def load_quant(model, checkpoint, wbits, groupsize=-1, faster_kernel=False, excl
 
 def load_quantized(model_name, wbits=4, groupsize=128, threshold=128):
     model_name = model_name.replace('/', '_')
-    path_to_model = Path(f'./models/{model_name}')
+    path_to_model = Path(f'/usr/src/app/models/{model_name}')
     found_pts = list(path_to_model.glob("*.pt"))
     found_safetensors = list(path_to_model.glob("*.safetensors"))
     pt_path = None
