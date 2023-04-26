@@ -212,15 +212,8 @@ class ModelWorker:
         del past_key_values
 
     def generate_stream_gate(self, params):
-        try:
-            for x in self.generate_stream(params):
-                yield x
-        except torch.cuda.OutOfMemoryError:
-            ret = {
-                "text": server_error_msg,
-                "error_code": 1,
-            }
-            yield json.dumps(ret).encode() + b"\0"
+        for x in self.generate_stream(params):
+            yield x
 
 
 app = FastAPI()
